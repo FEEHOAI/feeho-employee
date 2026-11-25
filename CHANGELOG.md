@@ -1,6 +1,11 @@
 # Changelog
 
-## 0.1.0 — 2026-11-17
+## 0.1.0 — 2026-11-25
+
+### Changed
+
+- Open-source core is now distributed under the MIT License. Commercial use is permitted without a separate FEEHO license.
+- Canonical repository links now use `FEEHOAI/feeho-employee`.
 
 ### Added
 
@@ -11,7 +16,7 @@
 - JSON evaluation reports with explicit human-review boundary.
 - Portable ZIP export with symlink and path-safety checks.
 - Fictional inquiry-triage example, sample results and nine unit tests.
-- Apache-2.0 licensing, contribution, security and commercial-boundary documentation.
+- MIT licensing, contribution, security and commercial-boundary documentation.
 
 ### Known limits
 
