@@ -6,7 +6,7 @@
 
 [中文说明](README.zh-CN.md) · [Quick start](#quick-start) · [Architecture](#how-it-works) · [Commercial boundary](COMMERCIAL.md)
 
-[![License: Apache-2.0](https://img.shields.io/badge/License-Apache--2.0-cf2634)](LICENSE) [![Status](https://img.shields.io/badge/status-alpha-orange)](CHANGELOG.md)
+[![License: MIT](https://img.shields.io/badge/License-MIT-cf2634)](LICENSE) [![Status](https://img.shields.io/badge/status-alpha-orange)](CHANGELOG.md)
 
 FEEHO Employee is a **model-agnostic contract toolkit** for turning a job objective into a portable employee package, validating its rules and permissions, and evaluating real agent results against explicit acceptance cases.
 
@@ -63,7 +63,7 @@ Run the example yourself; the report above is an illustrative rendering of the i
 Requires Python 3.10+.
 
 ```bash
-git clone https://github.com/ARAZERX/feeho-employee.git
+git clone https://github.com/FEEHOAI/feeho-employee.git
 cd feeho-employee
 python3 -m venv .venv
 source .venv/bin/activate
@@ -145,14 +145,14 @@ The test suite covers valid packages, real contract failures, missing results, p
 
 ## Contributing and security
 
-See [CONTRIBUTING.md](CONTRIBUTING.md) and [SECURITY.md](SECURITY.md). Contributions use Apache-2.0 with DCO sign-offs. Do not attach credentials, customer data or private enterprise material.
+See [CONTRIBUTING.md](CONTRIBUTING.md) and [SECURITY.md](SECURITY.md). Contributions use MIT with DCO sign-offs. Do not attach credentials, customer data or private enterprise material.
 
 ## License and commercial authorization
 
 Copyright 2026 Xiamen FEEHO Intelligent Technology Co., Ltd.
 
-This open-source core is licensed under [Apache License 2.0](LICENSE). **Commercial use of this core is permitted under Apache-2.0; no separate permission is required for that use.** Apache-2.0 also includes an express patent-license provision, which is one reason we keep it instead of switching to MIT.
+This open-source core is licensed under the [MIT License](LICENSE). **Commercial use of this core is permitted under MIT; no separate permission is required for that use.** You may use, copy, modify, merge, publish, distribute, sublicense and sell copies, provided the copyright and permission notices are preserved.
 
 A separate commercial agreement is required for the **enterprise product and services**: multi-employee organization operations, enterprise approval/audit, long-running Feishu/DingTalk/WeCom collaboration, industry role packs, private deployment and ongoing delivery services. Those are not included in this repository.
 
-An enterprise agreement cannot revoke the Apache-2.0 rights already granted for this core. See [COMMERCIAL.md](COMMERCIAL.md) for the exact boundary.
+An enterprise agreement cannot revoke the MIT rights already granted for this core. See [COMMERCIAL.md](COMMERCIAL.md) for the exact boundary.
