@@ -1,0 +1,22 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1280" height="640" viewBox="0 0 1280 640" role="img" aria-labelledby="title desc">
+<title id="title">FEEHO 员工生成器</title><desc id="desc">从岗位目标到可验收员工。定义职责、权限和交接规则，用真实执行证据验收。</desc>
+<defs><linearGradient id="glow" x1="0" y1="0" x2="1" y2="1"><stop stop-color="#15151b"/><stop offset="1" stop-color="#08090d"/></linearGradient></defs>
+<rect width="1280" height="640" fill="url(#glow)"/>
+<circle cx="1120" cy="80" r="300" fill="#9d2432" opacity=".08"/>
+<path d="M0 80H1280M0 560H1280M80 0V640M1200 0V640" stroke="#ffffff" opacity=".06"/>
+<rect x="80" y="80" width="5" height="480" fill="#d42a3c"/>
+<g font-family="'PingFang SC','Noto Sans CJK SC','Microsoft YaHei',sans-serif">
+<text x="128" y="139" fill="#ee6574" font-size="20" font-weight="600" letter-spacing="4">FEEHO / 开源员工生成器</text>
+<text x="124" y="247" fill="#ffffff" font-size="72" font-weight="700" letter-spacing="-2">从岗位目标</text>
+<text x="124" y="337" fill="#ffffff" font-size="72" font-weight="700" letter-spacing="-2">到可验收员工</text>
+<text x="130" y="394" fill="#b4b5bf" font-size="23">不只是提示词。职责、权限、交接与验收，都有据可查。</text>
+<g font-size="19" text-anchor="middle">
+<rect x="130" y="457" width="188" height="58" rx="4" fill="#15161d" stroke="#3b3d47"/><text x="224" y="494" fill="#fff">01  生成草案</text>
+<rect x="354" y="457" width="188" height="58" rx="4" fill="#15161d" stroke="#3b3d47"/><text x="448" y="494" fill="#fff">02  校验规则</text>
+<rect x="578" y="457" width="188" height="58" rx="4" fill="#15161d" stroke="#3b3d47"/><text x="672" y="494" fill="#fff">03  验收结果</text>
+<rect x="802" y="457" width="188" height="58" rx="4" fill="#d42a3c"/><text x="896" y="494" fill="#fff">04  导出员工包</text>
+</g>
+<path d="M318 486H354M542 486H578M766 486H802" stroke="#e8495b" stroke-width="2"/>
+<rect x="1074" y="106" width="110" height="40" rx="3" fill="#d42a3c" fill-opacity=".1" stroke="#d42a3c"/><text x="1129" y="132" fill="#f27986" font-size="17" text-anchor="middle">MIT 开源</text>
+<text x="1184" y="526" fill="#747681" font-size="14" text-anchor="end">模型无关 · 真人验收 · 可移植员工包</text>
+</g></svg>
