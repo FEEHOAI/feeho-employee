@@ -1,0 +1,23 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1280" height="760" viewBox="0 0 1280 760" role="img" aria-labelledby="title desc">
+<title id="title">员工包工作流</title><desc id="desc">从岗位目标和企业规则形成员工包，接入外部 Agent 执行，根据真实输出和工具记录验收，真人复核后导出可移植员工包。</desc>
+<rect width="1280" height="760" fill="#f6f4f4"/>
+<g font-family="'PingFang SC','Noto Sans CJK SC','Microsoft YaHei',sans-serif">
+<text x="64" y="78" fill="#242329" font-size="34" font-weight="700">一个岗位，怎样变成可验收的员工</text>
+<text x="64" y="116" fill="#75727a" font-size="18">模型可以更换，职责与验收标准不能含糊。</text>
+<g>
+<rect x="64" y="186" width="270" height="174" rx="8" fill="#fff" stroke="#d6d0d3"/>
+<text x="88" y="226" fill="#b7283a" font-size="15" font-weight="600">01 / 输入目标</text><text x="88" y="274" fill="#27252b" font-size="25" font-weight="600">岗位目标</text><text x="88" y="310" fill="#6c6972" font-size="17">企业资料与工作规则</text><text x="88" y="338" fill="#6c6972" font-size="17">明确禁区与异常处理</text>
+<rect x="398" y="166" width="382" height="214" rx="8" fill="#fff" stroke="#bd3041" stroke-width="1.5"/>
+<text x="424" y="206" fill="#b7283a" font-size="15" font-weight="600">02 / 形成员工包</text><text x="424" y="251" fill="#27252b" font-size="25" font-weight="600">职责 · 权限 · 交接</text><text x="424" y="289" fill="#6c6972" font-size="17">能做什么，什么必须审批</text><text x="424" y="321" fill="#6c6972" font-size="17">资料不足时，交给谁处理</text><text x="424" y="353" fill="#6c6972" font-size="17">每个验收案例怎样算通过</text>
+<rect x="844" y="186" width="270" height="174" rx="8" fill="#fff" stroke="#d6d0d3"/>
+<text x="868" y="226" fill="#b7283a" font-size="15" font-weight="600">03 / 真实执行</text><text x="868" y="274" fill="#27252b" font-size="25" font-weight="600">外部 Agent</text><text x="868" y="310" fill="#6c6972" font-size="17">实际输出与工具调用</text><text x="868" y="338" fill="#6c6972" font-size="17">异常交接与升级记录</text>
+</g>
+<path d="M334 273H398M780 273H844" stroke="#bc3042" stroke-width="2"/>
+<rect x="238" y="458" width="804" height="108" rx="8" fill="#f2e8ea" stroke="#c64554"/>
+<text x="640" y="501" fill="#332a2e" font-size="24" font-weight="600" text-anchor="middle">按验收合同检查真实证据</text>
+<text x="640" y="537" fill="#79656c" font-size="17" text-anchor="middle">必含与禁含内容 · 必须和禁止的工具 · 交接对象 · 是否升级</text>
+<path d="M588 380V458M979 360L850 458" stroke="#bc3042" stroke-width="2"/>
+<g font-size="20" text-anchor="middle"><rect x="174" y="636" width="376" height="64" rx="5" fill="#fff" stroke="#cfc5c9"/><text x="362" y="677" fill="#3b3338">真人复核 · 明确上岗边界</text><rect x="730" y="636" width="376" height="64" rx="5" fill="#bd3042"/><text x="918" y="677" fill="#fff">导出可移植员工包 ZIP</text></g>
+<path d="M500 566L362 636M780 566L918 636" stroke="#bc3042" stroke-width="2"/>
+<text x="64" y="722" fill="#817981" font-size="14">合同通过不等于自动上岗 · 示例不代表客户成绩或模型综合能力</text>
+</g></svg>
