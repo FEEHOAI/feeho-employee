@@ -8,16 +8,16 @@ version = "0.1.0"
 description = "Portable AI employee packages with explicit permissions and contract-based acceptance tests"
 readme = "README.md"
 requires-python = ">=3.10"
-license = {text = "Apache-2.0"}
+license = {text = "MIT"}
 authors = [{name = "Xiamen FEEHO Intelligent Technology Co., Ltd."}]
 keywords = ["ai-employee", "agent", "evaluation", "permissions", "schema"]
-classifiers = ["Development Status :: 3 - Alpha", "License :: OSI Approved :: Apache Software License", "Programming Language :: Python :: 3", "Programming Language :: Python :: 3.10", "Programming Language :: Python :: 3.11", "Programming Language :: Python :: 3.12"]
+classifiers = ["Development Status :: 3 - Alpha", "License :: OSI Approved :: MIT License", "Programming Language :: Python :: 3", "Programming Language :: Python :: 3.10", "Programming Language :: Python :: 3.11", "Programming Language :: Python :: 3.12"]
 dependencies = ["PyYAML>=6,<7", "jsonschema>=4.21,<5"]
 
 [project.urls]
 Homepage = "https://feeho.cn"
-Repository = "https://github.com/ARAZERX/feeho-employee"
-Issues = "https://github.com/ARAZERX/feeho-employee/issues"
+Repository = "https://github.com/FEEHOAI/feeho-employee"
+Issues = "https://github.com/FEEHOAI/feeho-employee/issues"
 
 [project.scripts]
 feeho = "feeho_employee.cli:main"
