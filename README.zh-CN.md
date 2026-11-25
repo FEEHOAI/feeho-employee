@@ -1,10 +1,10 @@
-![FEEHO 开源员工生成器：从岗位目标到可验收员工](docs/assets/banner-zh-CN.png)
+![FEEHO 开源员工生成器：从岗位目标到可验收员工](https://raw.githubusercontent.com/FEEHOAI/feeho-employee/main/docs/assets/banner-zh-CN.png)
 
-# FEEHO Employee 员工生成器
+# FEEHO员工生成器
 
 **把岗位目标整理成可移植员工包，用明确权限和验收合同检查真实 Agent 结果。**
 
-[English README](README.md)
+[English README](docs/README.en.md)
 
 ## 这是什么
 
@@ -50,7 +50,7 @@ feeho draft \
 
 ## 员工包怎样工作
 
-![员工包工作流：从岗位目标、员工包、真实执行到人工复核与导出](docs/assets/architecture-zh-CN.png)
+![员工包工作流：从岗位目标、员工包、真实执行到人工复核与导出](https://raw.githubusercontent.com/FEEHOAI/feeho-employee/main/docs/assets/architecture-zh-CN.png)
 
 ## 员工包结构
 
@@ -88,7 +88,7 @@ v0.1 不提供托管模型、自主 Agent 运行时、多员工组织调度、�
 1. **有依据的回复**：必须调用资料读取工具，不得执行外部写入，不得升级。
 2. **规则缺失**：必须说明需要人工确认，必须转交 `human-owner`，必须升级。
 
-![中文验收报告示例](docs/assets/evaluation-report-zh-CN.png)
+![中文验收报告示例](https://raw.githubusercontent.com/FEEHOAI/feeho-employee/main/docs/assets/evaluation-report-zh-CN.png)
 
 这张图是随仓库样例结果制作的说明图，不是在线服务截图、模型评测或客户成绩。你可以用上面的 Quick start 命令实际生成 JSON 报告。
 
