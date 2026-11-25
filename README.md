@@ -1,66 +1,25 @@
-![FEEHO Employee](docs/assets/banner.png)
+![FEEHO 开源员工生成器：从岗位目标到可验收员工](https://raw.githubusercontent.com/FEEHOAI/feeho-employee/main/docs/assets/banner-zh-CN.png)
 
-# FEEHO Employee
+# FEEHO员工生成器
 
-**Portable AI employee packages with explicit permissions and contract-based acceptance tests.**
+**把岗位目标整理成可移植员工包，用明确权限和验收合同检查真实 Agent 结果。**
 
-[中文说明](README.zh-CN.md) · [Quick start](#quick-start) · [Architecture](#how-it-works) · [Commercial boundary](COMMERCIAL.md)
+[English README](docs/README.en.md)
 
-[![License: MIT](https://img.shields.io/badge/License-MIT-cf2634)](LICENSE) [![Status](https://img.shields.io/badge/status-alpha-orange)](CHANGELOG.md)
+## 这是什么
 
-FEEHO Employee is a **model-agnostic contract toolkit** for turning a job objective into a portable employee package, validating its rules and permissions, and evaluating real agent results against explicit acceptance cases.
+这是一个模型无关的开源合同工具，包含：
 
-A sentence can create a draft. It cannot make someone ready for work. Enterprise rules, permission boundaries, handoffs, external results and human review are still required.
+- 通用岗位草案脚手架 `draft`
+- 员工包 Schema 与规则校验 `validate`
+- 外部 Agent 结果验收运行器 `test`
+- 可移植 ZIP 导出 `export`
 
-## Why it exists
+**一句话只能生成草案。**企业资料适配、权限边界、交接规则、外部结果与真人验收完成后，才可能成为正式员工。
 
-General agent tools often stop at a prompt and a tool list. FEEHO separates four concerns:
+## 快速开始
 
-- **Role**: what the job is accountable for.
-- **Boundaries**: what may be read, what needs approval and what is denied.
-- **Handoffs**: who handles missing rules, exceptions and timeouts.
-- **Evidence**: how actual outputs and tool traces pass or fail acceptance contracts.
-
-## How it works
-
-![Architecture](docs/assets/architecture.png)
-
-1. `draft` scaffolds a deterministic, generic employee package. It does **not** call a model.
-2. `validate` checks metadata, Markdown instructions, YAML permissions, handoffs and evaluation contracts.
-3. `test` reads results produced by **your agent runner** and evaluates outputs, tools, handoffs and escalation.
-4. `export` packages the validated files into a portable ZIP without symlinks or unsafe paths.
-
-A passing contract report does not automatically change `status: draft` to `accepted`. Human acceptance is explicit.
-
-## What you can inspect
-
-A package is more than a prompt. Each concern has a file, an owner and an acceptance boundary:
-
-| Concern | Where it lives | What the CLI checks |
-|---|---|---|
-| Job objective | `employee.yaml`, `role.md` | Identity, objective, draft/accepted status |
-| Enterprise rules | `role.md`, `instructions.md` | Required documents and explicit adaptation notes |
-| Permissions | `permissions.yaml` | Allow / approval / deny lists and conflicts |
-| Exceptions | `handoffs.yaml` | Destination and trigger for handoff or escalation |
-| Acceptance | `evals/cases.yaml`, `acceptance.yaml` | Required cases, output/tool assertions and pass threshold |
-| Execution evidence | External results JSON | Actual output, tool calls, handoff and escalation |
-
-## Worked example: inquiry triage
-
-The example uses fictional rules: classify inquiries from supplied documents, cite the basis, and hand off missing rules to a human owner.
-
-Two contracts are checked:
-
-1. **Grounded response** — the agent must use `read:provided-documents`, must not write externally, and must not escalate.
-2. **Missing rule** — the agent must say that human confirmation is needed, must hand off to `human-owner`, and must escalate.
-
-![Example evaluation report](docs/assets/evaluation-report.png)
-
-Run the example yourself; the report above is an illustrative rendering of the included sample, not a live service or customer result.
-
-## Quick start
-
-Requires Python 3.10+.
+需要 Python 3.10+：
 
 ```bash
 git clone https://github.com/FEEHOAI/feeho-employee.git
@@ -70,7 +29,7 @@ source .venv/bin/activate
 pip install -e .
 ```
 
-Validate and evaluate the included fictional example:
+运行自带的虚构示例：
 
 ```bash
 feeho validate examples/inquiry-triage
@@ -80,79 +39,71 @@ feeho test examples/inquiry-triage \
 feeho export examples/inquiry-triage --output /tmp/inquiry-triage.zip
 ```
 
-Create your own generic draft:
+生成自己的通用草案：
 
 ```bash
 feeho draft \
-  --role "Inquiry triage" \
-  --objective "Classify inquiries from approved material and escalate missing enterprise rules." \
+  --role "询盘初筛" \
+  --objective "根据已批准资料分级询盘，并在企业规则缺失时转交人工。" \
   --output /tmp/my-employee
-feeho validate /tmp/my-employee
 ```
 
-The included sample results demonstrate the runner. They are **not** a model benchmark or evidence of production readiness.
+## 员工包怎样工作
 
-## Employee package
+![员工包工作流：从岗位目标、员工包、真实执行到人工复核与导出](https://raw.githubusercontent.com/FEEHOAI/feeho-employee/main/docs/assets/architecture-zh-CN.png)
+
+## 员工包结构
 
 ```text
-inquiry-triage/
-├── employee.yaml       # identity, objective and draft/accepted status
-├── role.md             # accountability and enterprise rules
-├── instructions.md     # working rules
-├── permissions.yaml    # allow / approval_required / deny
-├── model-policy.yaml   # model-agnostic policy, no credentials
-├── handoffs.yaml       # owner and trigger for exceptions
-├── evals/cases.yaml    # input and explicit output/tool contracts
-└── acceptance.yaml     # pass rate, required cases and human review
+employee.yaml       身份、岗位目标、draft/accepted 状态
+role.md             岗位职责与企业规则
+instructions.md     工作规则
+permissions.yaml    允许、需审批、禁止的动作
+model-policy.yaml   模型策略，不保存凭证
+handoffs.yaml       异常、缺口和超时的交接对象
+evals/cases.yaml    输入与输出/工具验收合同
+acceptance.yaml     通过率、必过案例和真人复核
 ```
 
-### External result format
+## 验收运行器怎样工作
 
-The CLI does not execute an LLM. Pass results from the agent runtime you choose:
+CLI 不调用模型。你用任意 Agent 运行时执行 `evals/cases.yaml`，再把每个 case 的真实输出、工具调用、交接和升级情况写成 JSON 传给 `feeho test`。
 
-```json
-{
-  "cases": {
-    "missing-rule": {
-      "output": "企业规则缺失，需要人工确认后继续。",
-      "tool_calls": [],
-      "handoff_to": "human-owner",
-      "escalated": true
-    }
-  }
-}
-```
+v0.1 支持：输出必含/禁含、必须/禁止工具、指定交接对象、是否必须升级。缺结果会失败，不会把“文件格式正确”冒充“任务通过”。
 
-Supported v0.1 assertions: `contains`, `not_contains`, `required_tools`, `forbidden_tools`, `handoff_to`, and `must_escalate`.
+通过报告不会自动把 `draft` 改成 `accepted`；正式上岗仍需人工验收。
 
-## What v0.1 does not do
+## 当前边界
 
-- No hosted model, autonomous agent runtime or prompt-generation API.
-- No multi-employee scheduling, reporting hierarchy or organization-level ledger.
-- No built-in enterprise approval/audit system or long-running Feishu/DingTalk/WeCom integrations.
-- No claim that passing contract tests proves broad model quality.
-- No platform-specific exporters; ZIP is the portable v0.1 export.
+v0.1 不提供托管模型、自主 Agent 运行时、多员工组织调度、企业审批审计、长期飞书/钉钉/企微协作或行业岗位包，也不提供平台专用导出器。
 
-Those organization and enterprise capabilities belong to a separate commercial product. See [COMMERCIAL.md](COMMERCIAL.md).
+这些组织与企业能力属于独立私有商业产品，见 [COMMERCIAL.md](COMMERCIAL.md)。
 
-## Development
+## 图文示例：询盘初筛
+
+虚构规则要求：依据已提供资料分级、注明出处，并在企业规则缺失时转交人工。
+
+验收器会实际检查两条合同：
+
+1. **有依据的回复**：必须调用资料读取工具，不得执行外部写入，不得升级。
+2. **规则缺失**：必须说明需要人工确认，必须转交 `human-owner`，必须升级。
+
+![中文验收报告示例](https://raw.githubusercontent.com/FEEHOAI/feeho-employee/main/docs/assets/evaluation-report-zh-CN.png)
+
+这张图是随仓库样例结果制作的说明图，不是在线服务截图、模型评测或客户成绩。你可以用上面的 Quick start 命令实际生成 JSON 报告。
+
+## 测试与贡献
 
 ```bash
 python -m unittest discover -s tests -v
 ```
 
-The test suite covers valid packages, real contract failures, missing results, permission conflicts, unsafe YAML and unsafe exports.
+贡献流程见 [CONTRIBUTING.md](CONTRIBUTING.md)，安全问题见 [SECURITY.md](SECURITY.md)。不要提交密钥、客户资料或私有企业内容。
 
-## Contributing and security
+## 许可证与商业授权
 
-See [CONTRIBUTING.md](CONTRIBUTING.md) and [SECURITY.md](SECURITY.md). Contributions use MIT with DCO sign-offs. Do not attach credentials, customer data or private enterprise material.
+开源核心采用 [MIT License](LICENSE)，**核心本身允许商业使用，不需要额外向 FEEHO 申请商用授权**。MIT 允许商业使用、修改和分发，使用者需保留版权和许可声明。
 
-## License and commercial authorization
+**企业产品与持续服务需要单独商业授权**：多员工组织调度、企业审批审计、长期飞书/钉钉/企微协作、行业岗位包、私有化部署和持续交付服务。这些内容不在本开源仓库。
 
-Copyright 2026 Xiamen FEEHO Intelligent Technology Co., Ltd.
-
-This open-source core is licensed under the [MIT License](LICENSE). **Commercial use of this core is permitted under MIT; no separate permission is required for that use.** You may use, copy, modify, merge, publish, distribute, sublicense and sell copies, provided the copyright and permission notices are preserved.
-
-A separate commercial agreement is required for the **enterprise product and services**: multi-employee organization operations, enterprise approval/audit, long-running Feishu/DingTalk/WeCom collaboration, industry role packs, private deployment and ongoing delivery services. Those are not included in this repository.
-
-An enterprise agreement cannot revoke the MIT rights already granted for this core. See [COMMERCIAL.md](COMMERCIAL.md) for the exact boundary.
+企业合同不会收回或限制核心已经授予的 MIT 权利，详见 [COMMERCIAL.md](COMMERCIAL.md)。
