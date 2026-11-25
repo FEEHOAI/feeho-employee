@@ -20,7 +20,7 @@
 需要 Python 3.10+：
 
 ```bash
-git clone https://github.com/ARAZERX/feeho-employee.git
+git clone https://github.com/FEEHOAI/feeho-employee.git
 cd feeho-employee
 python3 -m venv .venv
 source .venv/bin/activate
@@ -96,8 +96,8 @@ python -m unittest discover -s tests -v
 
 ## 许可证与商业授权
 
-开源核心采用 [Apache License 2.0](LICENSE)，**核心本身允许商业使用，不需要额外向 FEEHO 申请商用授权**。Apache-2.0 还包含明确的专利授权条款，因此不改成 MIT。
+开源核心采用 [MIT License](LICENSE)，**核心本身允许商业使用，不需要额外向 FEEHO 申请商用授权**。MIT 允许商业使用、修改和分发，使用者需保留版权和许可声明。
 
 **企业产品与持续服务需要单独商业授权**：多员工组织调度、企业审批审计、长期飞书/钉钉/企微协作、行业岗位包、私有化部署和持续交付服务。这些内容不在本开源仓库。
 
-企业合同不会收回或限制核心已经授予的 Apache-2.0 权利，详见 [COMMERCIAL.md](COMMERCIAL.md)。
+企业合同不会收回或限制核心已经授予的 MIT 权利，详见 [COMMERCIAL.md](COMMERCIAL.md)。
