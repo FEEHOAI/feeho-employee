@@ -1,14 +1,16 @@
-![FEEHO Employee](docs/assets/banner.png)
+![FEEHO Employee](../docs/assets/banner.png)
 
 # FEEHO Employee
 
 **Portable AI employee packages with explicit permissions and contract-based acceptance tests.**
 
-[中文说明](README.zh-CN.md) · [Quick start](#quick-start) · [Architecture](#how-it-works) · [Commercial boundary](COMMERCIAL.md)
+[中文说明](../README.zh-CN.md) · [Quick start](#quick-start) · [Architecture](#how-it-works) · [Commercial boundary](../COMMERCIAL.md)
 
-[![License: MIT](https://img.shields.io/badge/License-MIT-cf2634)](LICENSE) [![Status](https://img.shields.io/badge/status-alpha-orange)](CHANGELOG.md)
+[![License: MIT](https://img.shields.io/badge/License-MIT-cf2634)](../LICENSE) [![Status](https://img.shields.io/badge/status-alpha-orange)](../CHANGELOG.md)
 
 FEEHO Employee is a **model-agnostic contract toolkit** for turning a job objective into a portable employee package, validating its rules and permissions, and evaluating real agent results against explicit acceptance cases.
+
+Version 0.2 adds deterministic Chinese requirement-to-policy diffs, acceptance invalidation, a Claude Code `PreToolUse` adapter, one-time expiring human grants and runtime audit records. See the [Claude Code comparison guide](CC_COMPARISON.zh-CN.md) for reproducible commands and security boundaries.
 
 A sentence can create a draft. It cannot make someone ready for work. Enterprise rules, permission boundaries, handoffs, external results and human review are still required.
 
@@ -23,7 +25,7 @@ General agent tools often stop at a prompt and a tool list. FEEHO separates four
 
 ## How it works
 
-![Architecture](docs/assets/architecture.png)
+![Architecture](../docs/assets/architecture.png)
 
 1. `draft` scaffolds a deterministic, generic employee package. It does **not** call a model.
 2. `validate` checks metadata, Markdown instructions, YAML permissions, handoffs and evaluation contracts.
@@ -54,7 +56,7 @@ Two contracts are checked:
 1. **Grounded response** — the agent must use `read:provided-documents`, must not write externally, and must not escalate.
 2. **Missing rule** — the agent must say that human confirmation is needed, must hand off to `human-owner`, and must escalate.
 
-![Example evaluation report](docs/assets/evaluation-report.png)
+![Example evaluation report](../docs/assets/evaluation-report.png)
 
 Run the example yourself; the report above is an illustrative rendering of the included sample, not a live service or customer result.
 
@@ -131,9 +133,10 @@ Supported v0.1 assertions: `contains`, `not_contains`, `required_tools`, `forbid
 - No multi-employee scheduling, reporting hierarchy or organization-level ledger.
 - No built-in enterprise approval/audit system or long-running Feishu/DingTalk/WeCom integrations.
 - No claim that passing contract tests proves broad model quality.
-- No platform-specific exporters; ZIP is the portable v0.1 export.
+- No platform-specific enterprise exporters beyond the Claude Code `PreToolUse` adapter; ZIP is the portable package export.
+- The Claude Code hook is a tool policy layer, not an OS sandbox. Enterprise MCP actions require explicit mappings.
 
-Those organization and enterprise capabilities belong to a separate commercial product. See [COMMERCIAL.md](COMMERCIAL.md).
+Those organization and enterprise capabilities belong to a separate commercial product. See [COMMERCIAL.md](../COMMERCIAL.md).
 
 ## Development
 
@@ -145,14 +148,14 @@ The test suite covers valid packages, real contract failures, missing results, p
 
 ## Contributing and security
 
-See [CONTRIBUTING.md](CONTRIBUTING.md) and [SECURITY.md](SECURITY.md). Contributions use MIT with DCO sign-offs. Do not attach credentials, customer data or private enterprise material.
+See [CONTRIBUTING.md](../CONTRIBUTING.md) and [SECURITY.md](../SECURITY.md). Contributions use MIT with DCO sign-offs. Do not attach credentials, customer data or private enterprise material.
 
 ## License and commercial authorization
 
 Copyright 2026 Xiamen FEEHO Intelligent Technology Co., Ltd.
 
-This open-source core is licensed under the [MIT License](LICENSE). **Commercial use of this core is permitted under MIT; no separate permission is required for that use.** You may use, copy, modify, merge, publish, distribute, sublicense and sell copies, provided the copyright and permission notices are preserved.
+This open-source core is licensed under the [MIT License](../LICENSE). **Commercial use of this core is permitted under MIT; no separate permission is required for that use.** You may use, copy, modify, merge, publish, distribute, sublicense and sell copies, provided the copyright and permission notices are preserved.
 
 A separate commercial agreement is required for the **enterprise product and services**: multi-employee organization operations, enterprise approval/audit, long-running Feishu/DingTalk/WeCom collaboration, industry role packs, private deployment and ongoing delivery services. Those are not included in this repository.
 
-An enterprise agreement cannot revoke the MIT rights already granted for this core. See [COMMERCIAL.md](COMMERCIAL.md) for the exact boundary.
+An enterprise agreement cannot revoke the MIT rights already granted for this core. See [COMMERCIAL.md](../COMMERCIAL.md) for the exact boundary.

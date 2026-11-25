@@ -1,0 +1,8 @@
+min_pass_rate: 1.0
+required_cases:
+- exaggerated-title-review
+- external-publish-policy
+- grounded-response
+- missing-rule
+human_review_required: true
+acceptance_invalidated_at: '2026-11-25T18:27:27.316761Z'

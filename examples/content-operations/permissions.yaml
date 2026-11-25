@@ -1,0 +1,12 @@
+allow:
+- content:draft
+- content:review
+- read:provided-documents
+approval_required:
+- external:publish
+- external:send
+- external:write
+deny:
+- budget:increase
+- permission:self-modify
+- secret:read

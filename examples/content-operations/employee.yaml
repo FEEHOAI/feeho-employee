@@ -1,0 +1,6 @@
+schema_version: '0.1'
+id: employee-draft
+role: 内容运营经理
+objective: 拆解一周内容计划，安排选题、写稿和审核，发布由负责人决定。
+status: draft
+created_at: '2026-11-25T18:27:27.311136Z'

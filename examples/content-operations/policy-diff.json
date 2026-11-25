@@ -1,0 +1,57 @@
+{
+  "schema_version": "0.2",
+  "package": "employee-draft",
+  "request": "可以写稿和审核，不能自行发布，发布前必须由负责人批准，标题夸大必须退回重写，不能增加预算。",
+  "generated_at": "2026-11-25T18:27:27.317319Z",
+  "changes": [
+    {
+      "action": "budget:increase",
+      "label": "增加预算",
+      "before": "未声明",
+      "after": "deny"
+    },
+    {
+      "action": "content:draft",
+      "label": "撰写草稿",
+      "before": "未声明",
+      "after": "allow"
+    },
+    {
+      "action": "content:review",
+      "label": "审核内容",
+      "before": "未声明",
+      "after": "allow"
+    },
+    {
+      "action": "external:publish",
+      "label": "对外发布",
+      "before": "未声明",
+      "after": "approval_required"
+    }
+  ],
+  "permissions": {
+    "allow": [
+      "content:draft",
+      "content:review",
+      "read:provided-documents"
+    ],
+    "approval_required": [
+      "external:publish",
+      "external:send",
+      "external:write"
+    ],
+    "deny": [
+      "budget:increase",
+      "permission:self-modify",
+      "secret:read"
+    ]
+  },
+  "new_required_cases": [
+    "external-publish-policy",
+    "exaggerated-title-review"
+  ],
+  "acceptance": "invalidated",
+  "human_review_required": true,
+  "warnings": [],
+  "compiler": "deterministic-rules-v1"
+}

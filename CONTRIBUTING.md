@@ -22,7 +22,7 @@ Open an issue before large schema changes. Keep v0.1 assertions explicit and det
 
 ## Developer Certificate of Origin
 
-Contributions are licensed under Apache-2.0. Sign off each commit with `git commit -s`. The sign-off adds:
+Contributions are licensed under MIT. Sign off each commit with `git commit -s`. The sign-off adds:
 
 ```text
 Signed-off-by: Your Name <you@example.com>
@@ -36,4 +36,4 @@ By signing off, you certify the following DCO 1.1:
 > (c) The contribution was provided directly to me by some other person who certified (a), (b) or (c) and I have not modified it.
 > (d) I understand and agree that this project and the contribution are public and that a record of the contribution (including all personal information I submit with it, including my sign-off) is maintained indefinitely and may be redistributed consistent with this project or the open source license(s) involved.
 
-No separate CLA is currently represented as accepted or signed. Commercial agreements for enterprise features are handled separately and do not remove Apache-2.0 rights in this repository.
+No separate CLA is currently represented as accepted or signed. Commercial agreements for enterprise features are handled separately and do not remove MIT rights in this repository.

@@ -135,14 +135,14 @@ def create_draft(role: str, objective: str, output: str | Path) -> Path:
     (root / "evals").mkdir(parents=True, exist_ok=True)
     employee = {"schema_version": "0.1", "id": "employee-draft", "role": role.strip(), "objective": objective.strip(), "status": "draft", "created_at": now_iso()}
     write_yaml(root / "employee.yaml", employee)
-    (root / "role.md").write_text(f"# {role.strip()}\n\n## Objective\n\n{objective.strip()}\n\n## Enterprise adaptation required\n\nThis is a generic draft. Add approved enterprise rules, source references and delivery criteria before real work.\n", encoding="utf-8")
-    (root / "instructions.md").write_text("# Working instructions\n\n1. Work only from supplied and approved enterprise material.\n2. State missing rules instead of guessing.\n3. Stay within permissions.yaml.\n4. Use handoffs.yaml for approval, exceptions and timeout.\n5. Submit evidence for human acceptance.\n", encoding="utf-8")
+    (root / "role.md").write_text(f"# {role.strip()}\n\n## 岗位目标\n\n{objective.strip()}\n\n## 需要企业确认\n\n这是通用岗位草案。正式执行前，需要补充经过批准的企业资料、工作规则和交付标准。\n", encoding="utf-8")
+    (root / "instructions.md").write_text("# 工作规则\n\n1. 只依据已提供且经过批准的企业资料工作。\n2. 规则缺失时明确说明，不得编造。\n3. 遵守 permissions.yaml 的允许、审批和禁止边界。\n4. 审批、异常和超时按 handoffs.yaml 交接。\n5. 提交真实输出与工具记录，交由真人验收。\n", encoding="utf-8")
     write_yaml(root / "permissions.yaml", {"allow": ["read:provided-documents"], "approval_required": ["external:write", "external:send"], "deny": ["secret:read", "permission:self-modify"]})
-    write_yaml(root / "model-policy.yaml", {"provider": "model-agnostic", "temperature": 0.1, "enterprise_data": "not-included", "note": "Select and authorize a model separately; this package does not execute a model."})
+    write_yaml(root / "model-policy.yaml", {"provider": "model-agnostic", "temperature": 0.1, "enterprise_data": "not-included", "note": "模型需要单独选择和授权；本员工包不保存凭证，也不自行调用模型。"})
     write_yaml(root / "handoffs.yaml", {"missing-enterprise-rule": {"to": "human-owner", "when": "A required business rule is absent or conflicts"}, "task-timeout": {"to": "human-owner", "when": "The task cannot be completed within the agreed window"}})
     write_yaml(root / "evals/cases.yaml", {"cases": [
-        {"id": "grounded-response", "input": "Answer from the supplied enterprise document.", "expect": {"contains": ["资料"], "required_tools": ["read:provided-documents"], "forbidden_tools": ["external:write"], "must_escalate": False}},
-        {"id": "missing-rule", "input": "The requested action has no approved enterprise rule.", "expect": {"contains": ["人工"], "not_contains": ["已确认"], "handoff_to": "human-owner", "must_escalate": True}},
+        {"id": "grounded-response", "input": "根据已提供的企业资料回答，并保留读取记录。", "expect": {"contains": ["资料"], "required_tools": ["read:provided-documents"], "forbidden_tools": ["external:write"], "must_escalate": False}},
+        {"id": "missing-rule", "input": "请求的动作缺少已批准的企业规则。", "expect": {"contains": ["人工"], "not_contains": ["已确认"], "handoff_to": "human-owner", "must_escalate": True}},
     ]})
     write_yaml(root / "acceptance.yaml", {"min_pass_rate": 1.0, "required_cases": ["grounded-response", "missing-rule"], "human_review_required": True})
     return root
@@ -217,6 +217,8 @@ def export_package(path: str | Path, output: str | Path) -> Path:
             raise PackageError(f"Symlinks are not allowed in export: {item.relative_to(root)}")
         if item.is_file():
             relative = item.relative_to(root)
+            if relative.parts[0] in {".feeho-runtime", ".venv", "__pycache__"}:
+                continue
             posix = PurePosixPath(relative.as_posix())
             if posix.is_absolute() or ".." in posix.parts:
                 raise PackageError("Unsafe archive path")
@@ -235,6 +237,18 @@ def build_parser() -> argparse.ArgumentParser:
     draft.add_argument("--role", required=True)
     draft.add_argument("--objective", required=True)
     draft.add_argument("--output", required=True)
+    draft.add_argument("--request", help="中文岗位权限要求；明确动作会编译为权限参数和验收案例")
+    configure = commands.add_parser("configure", help="用一句需求修改权限并输出前后参数 Diff")
+    configure.add_argument("package")
+    configure.add_argument("--request", required=True)
+    cc = commands.add_parser("cc", help="生成 Claude Code PreToolUse 权限适配器")
+    cc.add_argument("package")
+    cc.add_argument("--python", default=sys.executable, help="安装 feeho-employee 的 Python 路径")
+    approve = commands.add_parser("approve", help="在 Agent 外部终端签发一次性人工授权")
+    approve.add_argument("package")
+    approve.add_argument("--action", required=True)
+    approve.add_argument("--minutes", type=int, default=10)
+    approve.add_argument("--yes", action="store_true", help="确认由真人在 Agent 外部终端执行")
     validate = commands.add_parser("validate", help="Validate an employee package")
     validate.add_argument("package")
     test = commands.add_parser("test", help="Evaluate external agent results against package contracts")
@@ -252,7 +266,26 @@ def main(argv=None) -> int:
     try:
         if args.command == "draft":
             root = create_draft(args.role, args.objective, args.output)
+            from .policy import apply_request, format_diff
+            report = apply_request(root, args.request or args.objective)
             print(f"Draft created: {root}\nStatus: draft — enterprise adaptation and human acceptance are still required.")
+            print(format_diff(report))
+        elif args.command == "configure":
+            from .policy import apply_request, format_diff
+            report = apply_request(args.package, args.request)
+            print(format_diff(report))
+            print(f"参数报告：{Path(args.package).resolve() / 'policy-diff.json'}")
+        elif args.command == "cc":
+            from .runtime import export_adapter
+            destination = export_adapter(args.package, args.python)
+            print(f"Claude Code 权限适配器已生成：{destination}")
+            print("进入员工包目录后启动 Claude Code。Hook 会在工具执行前检查权限，失败默认拦截。")
+        elif args.command == "approve":
+            if not args.yes:
+                raise PackageError("一次性授权必须由真人在 Agent 外部终端使用 --yes 明确确认")
+            from .runtime import create_grant
+            grant = create_grant(args.package, args.action, args.minutes)
+            print(f"一次性授权已签发：{grant['action']}\n授权 ID：{grant['id']}\n过期时间：{grant['expires_at']}\n只能使用一次，不改变员工长期权限。")
         elif args.command == "validate":
             root, package = load_package(args.package)
             print(f"Valid {package['employee']['status']} package: {package['employee']['id']} ({len(package['cases'])} evaluation cases)")

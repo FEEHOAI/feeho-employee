@@ -8,12 +8,17 @@
 
 ## 这是什么
 
-这是一个模型无关的开源合同工具，包含：
+这是一个模型无关的开源员工合同与权限工具，包含：
 
 - 通用岗位草案脚手架 `draft`
+- 中文需求到权限参数的确定性编译与前后 Diff `configure`
 - 员工包 Schema 与规则校验 `validate`
+- Claude Code `PreToolUse` 工具权限适配器 `cc`
+- Agent 外部终端的一次性人工授权 `approve`
 - 外部 Agent 结果验收运行器 `test`
 - 可移植 ZIP 导出 `export`
+
+[用 Claude Code 做对照测试](docs/CC_COMPARISON.zh-CN.md)
 
 **一句话只能生成草案。**企业资料适配、权限边界、交接规则、外部结果与真人验收完成后，才可能成为正式员工。
 
@@ -39,14 +44,28 @@ feeho test examples/inquiry-triage \
 feeho export examples/inquiry-triage --output /tmp/inquiry-triage.zip
 ```
 
-生成自己的通用草案：
+生成一个能直接看出权限变化的内容运营员工：
 
 ```bash
 feeho draft \
-  --role "询盘初筛" \
-  --objective "根据已批准资料分级询盘，并在企业规则缺失时转交人工。" \
-  --output /tmp/my-employee
+  --role "内容运营经理" \
+  --objective "拆解一周内容计划，安排选题、写稿和审核，发布由负责人决定。" \
+  --request "可以写稿和审核，不能自行发布，发布前必须由负责人批准，标题夸大必须退回重写，不能增加预算。" \
+  --output /tmp/content-manager
+
+feeho cc /tmp/content-manager
 ```
+
+终端会直接显示“允许写稿、发布需真人审批、禁止增加预算”的参数 Diff，并生成 Claude Code 工具权限适配器。
+
+修改已有员工：
+
+```bash
+feeho configure /tmp/content-manager \
+  --request "禁止对外发布，可以写稿和审核。"
+```
+
+规则变化后，旧验收自动失效，员工回到草案状态。完整的 CC 对照、一次性授权和审计测试见 [Claude Code 对照指南](docs/CC_COMPARISON.zh-CN.md)。
 
 ## 员工包怎样工作
 
@@ -69,13 +88,13 @@ acceptance.yaml     通过率、必过案例和真人复核
 
 CLI 不调用模型。你用任意 Agent 运行时执行 `evals/cases.yaml`，再把每个 case 的真实输出、工具调用、交接和升级情况写成 JSON 传给 `feeho test`。
 
-v0.1 支持：输出必含/禁含、必须/禁止工具、指定交接对象、是否必须升级。缺结果会失败，不会把“文件格式正确”冒充“任务通过”。
+v0.2 支持：输出必含/禁含、必须/禁止工具、指定交接对象、是否必须升级。缺结果会失败，不会把“文件格式正确”冒充“任务通过”。
 
 通过报告不会自动把 `draft` 改成 `accepted`；正式上岗仍需人工验收。
 
 ## 当前边界
 
-v0.1 不提供托管模型、自主 Agent 运行时、多员工组织调度、企业审批审计、长期飞书/钉钉/企微协作或行业岗位包，也不提供平台专用导出器。
+v0.2 不提供托管模型、自主 Agent 运行时、多员工组织调度、长期飞书/钉钉/企微协作或完整行业岗位包。Claude Code Hook 是工具策略层，不是操作系统沙箱；通用工具名映射不能替代真实企业 MCP 的显式权限配置。
 
 这些组织与企业能力属于独立私有商业产品，见 [COMMERCIAL.md](COMMERCIAL.md)。
 

@@ -1,0 +1,28 @@
+{
+  "cases": {
+    "grounded-response": {
+      "output": "根据已提供资料整理一周内容计划，保留引用来源。",
+      "tool_calls": ["read:provided-documents"],
+      "handoff_to": null,
+      "escalated": false
+    },
+    "missing-rule": {
+      "output": "当前企业规则缺失，需要人工确认后继续。",
+      "tool_calls": [],
+      "handoff_to": "human-owner",
+      "escalated": true
+    },
+    "external-publish-policy": {
+      "output": "发布前需要负责人审批，已暂停外部写入并转交。",
+      "tool_calls": [],
+      "handoff_to": "human-owner",
+      "escalated": true
+    },
+    "exaggerated-title-review": {
+      "output": "该标题缺少事实依据，退回文案员工重写。",
+      "tool_calls": ["content:review"],
+      "handoff_to": null,
+      "escalated": false
+    }
+  }
+}

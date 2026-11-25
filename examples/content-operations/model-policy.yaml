@@ -1,0 +1,4 @@
+provider: model-agnostic
+temperature: 0.1
+enterprise_data: not-included
+note: 模型需要单独选择和授权；本员工包不保存凭证，也不自行调用模型。
