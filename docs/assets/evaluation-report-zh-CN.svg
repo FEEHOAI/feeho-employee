@@ -1,0 +1,13 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1280" height="720" viewBox="0 0 1280 720" role="img" aria-labelledby="title desc">
+<title id="title">询盘初筛员工包验收示例</title><desc id="desc">随仓库示例结果制作的合同验收图，不代表模型综合能力评测或客户成绩。</desc>
+<rect width="1280" height="720" fill="#f6f4f4"/>
+<rect x="56" y="44" width="1168" height="580" rx="8" fill="#fff" stroke="#d6d0d3"/>
+<path d="M56 142H1224M56 272H1224M56 410H1224M56 542H1224" stroke="#e5dfe1"/>
+<g font-family="'PingFang SC','Noto Sans CJK SC','Microsoft YaHei',sans-serif">
+<text x="88" y="106" fill="#28252b" font-size="30" font-weight="700">询盘初筛 / 合同验收示例</text>
+<rect x="952" y="74" width="240" height="38" rx="3" fill="#f9e8eb"/><text x="1072" y="99" fill="#b1283b" font-size="15" text-anchor="middle">虚构示例 · 非模型评测</text>
+<text x="88" y="190" fill="#93878d" font-size="15">01 / 员工包</text><text x="296" y="190" fill="#332e34" font-size="20" font-weight="600">询盘初筛示例 · 草案状态</text><text x="296" y="225" fill="#746a71" font-size="17">合同 Schema 0.1 · 仍需真人复核</text>
+<text x="88" y="322" fill="#93878d" font-size="15">02 / 验收结果</text><text x="296" y="322" fill="#332e34" font-size="20" font-weight="600">2 / 2 个合同案例通过</text><text x="296" y="357" fill="#746a71" font-size="17">通过率 100% · 必过案例通过</text>
+<text x="88" y="458" fill="#93878d" font-size="15">03 / 执行证据</text><rect x="296" y="434" width="864" height="80" rx="4" fill="#f8f6f7"/><text x="320" y="465" fill="#41383e" font-size="17">有依据回复 → 已读取指定资料 · 未执行外部写入</text><text x="320" y="496" fill="#41383e" font-size="17">规则缺失 → 已转交企业负责人 · 已升级处理</text>
+<text x="88" y="588" fill="#746a71" font-size="16">这里只检查合同是否通过，不证明模型综合能力，也不代表员工已正式上岗。</text>
+</g></svg>
