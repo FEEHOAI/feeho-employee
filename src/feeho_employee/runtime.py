@@ -19,7 +19,7 @@ from .cli import PackageError, load_package
 from .policy import now_iso
 
 RUNTIME_DIR = ".feeho-runtime"
-PROTECTED_NAMES = {"permissions.yaml", "settings.json", "policy-diff.json", "feeho-policy.json"}
+PROTECTED_NAMES = {"employee.yaml", "permissions.yaml", "organization.yaml", "acceptance.yaml", "cases.yaml", "role.md", "instructions.md", "settings.json", "policy-diff.json", "feeho-policy.json"}
 SECRET_PATTERN = re.compile(r"(?:^|[\s/\\'\"])(?:\.env(?:\..*)?|id_rsa|id_ed25519|[^\s/\\]*(?:secret|credential|token)[^\s/\\]*)(?=$|[\s/\\'\"])|\.(?:pem|key)(?:$|[\s'\"])", re.I)
 PUBLISH_PATTERN = re.compile(r"publish|post(?:ing)?|upload|发布|推送", re.I)
 SEND_PATTERN = re.compile(r"send|email|smtp|message|外发|发送", re.I)
@@ -106,7 +106,7 @@ def classify_tool(tool_name: str, tool_input: dict) -> tuple[str, str]:
     target = file_path or command
     if SECRET_PATTERN.search(target):
         return "secret:read", "尝试访问密钥或凭证文件"
-    if any(target.endswith(name) or f"/{name}" in target or f"\\{name}" in target for name in PROTECTED_NAMES) or RUNTIME_DIR in target:
+    if any(target.endswith(name) or f"/{name}" in target or f"\\{name}" in target for name in PROTECTED_NAMES) or RUNTIME_DIR in target or "/versions/" in target or "\\versions\\" in target:
         return "permission:self-modify", "尝试修改员工权限、适配器或运行记录"
     if tool_name == "Bash" and re.search(r"\bfeeho\s+(approve|configure)\b", command):
         return "permission:self-modify", "Agent 不能自行签发授权或修改权限"
@@ -171,4 +171,22 @@ def export_adapter(path: str | Path, python_executable: str = "python3") -> Path
         groups.append({"matcher": "*", "hooks": [{"type": "command", "command": command}]})
     destination.parent.mkdir(parents=True, exist_ok=True)
     destination.write_text(json.dumps(existing, ensure_ascii=False, indent=2) + "\n", encoding="utf-8")
+    command_path = root / ".claude" / "commands" / "feeho.md"
+    command_path.parent.mkdir(parents=True, exist_ok=True)
+    if not command_path.exists():
+        command_path.write_text("""---
+description: 只读预览 FEEHO 组织与权限 Diff
+argument-hint: "<一句要改变的要求>"
+---
+
+请按顺序执行，不要自己编造参数或修改合同文件：
+
+1. 运行 `feeho propose . --request "$ARGUMENTS"`，向用户展示只读 Diff、验收影响和下一次执行路径。
+2. 明确告诉用户：当前只是预览，员工包没有被修改，Agent 不能自行应用或批准。
+3. 如果用户决定应用，请用户在 Agent 外部终端运行输出中的 `feeho configure` 命令。
+4. 应用后可运行 `feeho history .`、`feeho diff .` 和 `feeho simulate .` 核对版本与实际执行边界。
+5. 涉及发布或其他审批动作时，真人必须在 Agent 外部运行 `feeho approve`。Agent 不得代替真人签发授权。
+
+FEEHO generated command; safe to regenerate with `feeho cc`.
+""", encoding="utf-8")
     return destination

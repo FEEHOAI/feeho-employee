@@ -45,10 +45,21 @@ class ClaudeCodeAdapterTests(unittest.TestCase):
     def test_agent_cannot_approve_itself_or_rewrite_policy(self):
         approve = evaluate_tool(self.root, "Bash", {"command": "feeho approve . --action external:publish --yes"})
         rewrite = evaluate_tool(self.root, "Write", {"file_path": str(self.root / "permissions.yaml")})
+        organization = evaluate_tool(self.root, "Write", {"file_path": str(self.root / "organization.yaml")})
+        version = evaluate_tool(self.root, "Edit", {"file_path": str(self.root / "versions" / "v002.json")})
         self.assertEqual(approve["action"], "permission:self-modify")
         self.assertFalse(approve["allow"])
         self.assertEqual(rewrite["action"], "permission:self-modify")
         self.assertFalse(rewrite["allow"])
+        self.assertFalse(organization["allow"])
+        self.assertFalse(version["allow"])
+
+    def test_propose_diff_and_simulate_are_safe_for_agent(self):
+        for command in ("feeho propose . --request 禁止发布", "feeho diff .", "feeho simulate ."):
+            result = evaluate_tool(self.root, "Bash", {"command": command})
+            self.assertTrue(result["allow"], command)
+        configure = evaluate_tool(self.root, "Bash", {"command": "feeho configure . --request 禁止发布"})
+        self.assertFalse(configure["allow"])
 
     def test_secret_read_is_denied_and_audit_contains_no_file_contents(self):
         result = evaluate_tool(self.root, "Read", {"file_path": "/customer/.env", "secret_value": "do-not-log"})

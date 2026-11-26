@@ -6,7 +6,7 @@
 
 Claude Code 是通用执行者。FEEHO 员工生成器负责把执行者放进一个明确的岗位合同：能做什么、什么必须请示、什么绝对不能做、怎样验收，以及规则改变后哪些旧验收失效。
 
-FEEHO 不替代 Claude Code，也不要求你更换模型。v0.2 可以把员工包编译成 Claude Code 的 `PreToolUse` 权限层。
+FEEHO 不替代 Claude Code，也不要求你更换模型。v0.3 可以把员工包编译成 Claude Code 的 `PreToolUse` 权限层。
 
 ## 1. 生成员工并查看参数 Diff
 
@@ -40,7 +40,44 @@ feeho draft \
 
 需求编译器当前是**确定性的中文规则编译器**，不是 LLM。无法识别的要求会显示警告，不会假装已经理解。
 
-## 2. 把同一员工包装进 Claude Code
+## 2. 在 CC 里只读预览组织 Diff
+
+先运行 `feeho cc /tmp/feeho-content` 生成适配器，然后进入目录启动 Claude Code。
+
+在 CC 中输入：
+
+```text
+/feeho 周三用户案例先由审核员工检查，经理复核后才能交给我批准。
+```
+
+CC 会调用 `feeho propose`，展示岗位分工、任务顺序、审批路径、验收合同和下一次执行。**原员工包不会被修改，Agent 不能自己应用或批准。**
+
+决定应用后，真人在 Agent 外部终端执行：
+
+```bash
+feeho configure /tmp/feeho-content \
+  --request "周三用户案例先由审核员工检查，经理复核后才能交给我批准。"
+```
+
+每次应用都会生成不可变版本：
+
+```text
+versions/v001.json  初始员工合同
+versions/v002.json  初始权限要求
+versions/v003.json  审核员工 → 经理复核
+```
+
+比较两个版本并检查下一次执行：
+
+```bash
+feeho history /tmp/feeho-content
+feeho diff /tmp/feeho-content --from 2 --to 3
+feeho simulate /tmp/feeho-content
+```
+
+`simulate` 只根据参数计算路径，不调用模型。审核顺序也进入了 `required_sequence` 验收，顺序颠倒会失败。
+
+## 3. 把同一员工包装进 Claude Code
 
 ```bash
 feeho cc /tmp/feeho-content
@@ -52,7 +89,7 @@ claude
 
 已有的 Hooks 会保留，不会直接覆盖。`feeho cc` 默认记录当前虚拟环境的 Python 路径，避免 Claude Code 调用了另一个没有安装 FEEHO 的 Python。
 
-## 3. 不调用模型，先验证工具边界
+## 4. 不调用模型，先验证工具边界
 
 在员工包目录执行：
 
@@ -72,7 +109,7 @@ printf '%s' '{"tool_name":"Bash","tool_input":{"command":"feeho approve . --acti
 
 预期：同样被拦截，动作归类为 `permission:self-modify`。
 
-## 4. 真人授权只放行一次
+## 5. 真人授权只放行一次
 
 在 **Claude Code 外部的另一个终端**执行：
 
@@ -82,14 +119,14 @@ feeho approve /tmp/feeho-content \
   --yes
 ```
 
-然后再次运行第 3 节的发布 Hook：
+然后再次运行第 4 节的发布 Hook：
 
 - 第一次：退出码 `0`，一次性授权被核销。
 - 第二次：退出码 `2`，再次要求真人审批。
 
 授权默认十分钟过期，只覆盖一个动作，不会改写长期权限。并发核销使用本地文件锁，避免两个工具调用共用同一张授权。
 
-## 5. 查看审计记录
+## 6. 查看审计记录
 
 ```bash
 cat /tmp/feeho-content/.feeho-runtime/audit.jsonl
@@ -99,7 +136,7 @@ cat /tmp/feeho-content/.feeho-runtime/audit.jsonl
 
 `.feeho-runtime` 不会进入 `feeho export` 的 ZIP，授权与审计不会被误发给员工包接收方。
 
-## 6. 验收真实 Agent 结果
+## 7. 验收真实 Agent 结果
 
 仓库附带一个虚构的内容运营示例：
 

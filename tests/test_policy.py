@@ -29,11 +29,13 @@ class PolicyCompilerTests(unittest.TestCase):
         self.assertIn("content:review", permissions["allow"])
         self.assertIn("external:publish", permissions["approval_required"])
         self.assertNotIn("external:publish", permissions["deny"])
-        changes = {item["action"]: item["after"] for item in report["changes"]}
+        changes = {item["action"]: item["after"] for item in report["changes"] if "action" in item}
         self.assertEqual(changes["external:publish"], "approval_required")
         self.assertIn("external-publish-policy", report["new_required_cases"])
         self.assertNotIn("external-send-policy", report["new_required_cases"])
         self.assertIn("exaggerated-title-review", report["new_required_cases"])
+        self.assertIn("external-publish-policy", report["organization"]["acceptance"]["required_cases"])
+        self.assertIn("exaggerated-title-review", report["organization"]["acceptance"]["required_cases"])
         self.assertIn("上次验收已失效", format_diff(report))
         _, package = load_package(self.root)
         self.assertEqual(package["employee"]["status"], "draft")
@@ -49,6 +51,17 @@ class PolicyCompilerTests(unittest.TestCase):
         desired, warnings = compile_request("让工作更符合我们团队的习惯")
         self.assertTrue(warnings)
         self.assertNotIn("content:draft", desired["allow"])
+
+    def test_no_real_change_does_not_invalidate_acceptance(self):
+        employee_path = self.root / "employee.yaml"
+        employee = yaml.safe_load(employee_path.read_text())
+        employee["status"] = "accepted"
+        employee_path.write_text(yaml.safe_dump(employee, allow_unicode=True, sort_keys=False))
+        report = apply_request(self.root, "让工作更符合团队习惯")
+        self.assertEqual(report["version"], 1)
+        self.assertEqual(report["acceptance"], "unchanged")
+        self.assertEqual(yaml.safe_load(employee_path.read_text())["status"], "accepted")
+        self.assertFalse((self.root / "versions" / "v002.json").exists())
 
     def test_relaxing_rule_removes_stale_required_case(self):
         apply_request(self.root, "不能自行发布，发布前必须批准。")

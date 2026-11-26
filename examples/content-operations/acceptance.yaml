@@ -5,4 +5,4 @@ required_cases:
 - grounded-response
 - missing-rule
 human_review_required: true
-acceptance_invalidated_at: '2026-11-25T18:27:27.316761Z'
+acceptance_invalidated_at: '2026-11-26T06:29:51.349368Z'

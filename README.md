@@ -11,7 +11,9 @@
 这是一个模型无关的开源员工合同与权限工具，包含：
 
 - 通用岗位草案脚手架 `draft`
-- 中文需求到权限参数的确定性编译与前后 Diff `configure`
+- 中文需求到组织与权限参数的确定性编译 `configure`
+- 只读组织 Diff 预览 `propose`、不可变版本比较 `diff` 和版本列表 `history`
+- 下一次执行路径计算 `simulate`，不冒充模型运行
 - 员工包 Schema 与规则校验 `validate`
 - Claude Code `PreToolUse` 工具权限适配器 `cc`
 - Agent 外部终端的一次性人工授权 `approve`
@@ -58,14 +60,25 @@ feeho cc /tmp/content-manager
 
 终端会直接显示“允许写稿、发布需真人审批、禁止增加预算”的参数 Diff，并生成 Claude Code 工具权限适配器。
 
-修改已有员工：
+先让 CC 只读预览组织与权限变化：
+
+```bash
+feeho propose /tmp/content-manager \
+  --request "周三用户案例先由审核员工检查，经理复核后才能交给我批准。"
+```
+
+`propose` 会显示岗位分工、任务顺序、审批路径、验收合同和下一次执行，**不会修改员工包**。决定应用后，由真人在 Agent 外部运行：
 
 ```bash
 feeho configure /tmp/content-manager \
-  --request "禁止对外发布，可以写稿和审核。"
+  --request "周三用户案例先由审核员工检查，经理复核后才能交给我批准。"
+
+feeho history /tmp/content-manager
+feeho diff /tmp/content-manager --from 2 --to 3
+feeho simulate /tmp/content-manager
 ```
 
-规则变化后，旧验收自动失效，员工回到草案状态。完整的 CC 对照、一次性授权和审计测试见 [Claude Code 对照指南](docs/CC_COMPARISON.zh-CN.md)。
+每次应用都生成不可变 `versions/vNNN.json`。规则真实变化后，旧验收失效；没有实际变化时，不使验收失效。完整 CC 对照、一次性授权和审计测试见 [Claude Code 对照指南](docs/CC_COMPARISON.zh-CN.md)。
 
 ## 员工包怎样工作
 
@@ -78,6 +91,8 @@ employee.yaml       身份、岗位目标、draft/accepted 状态
 role.md             岗位职责与企业规则
 instructions.md     工作规则
 permissions.yaml    允许、需审批、禁止的动作
+organization.yaml   岗位职责、任务顺序与审批路径
+versions/           不可变需求版本与完整合同快照
 model-policy.yaml   模型策略，不保存凭证
 handoffs.yaml       异常、缺口和超时的交接对象
 evals/cases.yaml    输入与输出/工具验收合同
@@ -88,13 +103,13 @@ acceptance.yaml     通过率、必过案例和真人复核
 
 CLI 不调用模型。你用任意 Agent 运行时执行 `evals/cases.yaml`，再把每个 case 的真实输出、工具调用、交接和升级情况写成 JSON 传给 `feeho test`。
 
-v0.2 支持：输出必含/禁含、必须/禁止工具、指定交接对象、是否必须升级。缺结果会失败，不会把“文件格式正确”冒充“任务通过”。
+v0.3 支持：输出必含/禁含、必须/禁止工具、指定交接对象、是否必须升级，以及 `required_sequence` 执行顺序验收。缺结果会失败，不会把“文件格式正确”冒充“任务通过”。
 
 通过报告不会自动把 `draft` 改成 `accepted`；正式上岗仍需人工验收。
 
 ## 当前边界
 
-v0.2 不提供托管模型、自主 Agent 运行时、多员工组织调度、长期飞书/钉钉/企微协作或完整行业岗位包。Claude Code Hook 是工具策略层，不是操作系统沙箱；通用工具名映射不能替代真实企业 MCP 的显式权限配置。
+v0.3 不提供托管模型、自主 Agent 运行时、多员工组织调度、长期飞书/钉钉/企微协作或完整行业岗位包。Claude Code Hook 是工具策略层，不是操作系统沙箱；通用工具名映射不能替代真实企业 MCP 的显式权限配置。
 
 这些组织与企业能力属于独立私有商业产品，见 [COMMERCIAL.md](COMMERCIAL.md)。
 

@@ -185,6 +185,11 @@ def evaluate(root: Path, package: dict, results_path: str | Path, report_path: s
         for tool in expect.get("forbidden_tools", []):
             if tool in tools:
                 failures.append(f"forbidden tool used: {tool}")
+        sequence = expect.get("required_sequence", [])
+        if sequence:
+            positions = [tools.index(tool) for tool in sequence if tool in tools]
+            if len(positions) != len(sequence) or positions != sorted(positions):
+                failures.append(f"required execution sequence missing: {' -> '.join(sequence)}")
         if "handoff_to" in expect and actual.get("handoff_to") != expect["handoff_to"]:
             failures.append(f"handoff must be {expect['handoff_to']}")
         if "must_escalate" in expect and actual.get("escalated") is not expect["must_escalate"]:
@@ -238,9 +243,22 @@ def build_parser() -> argparse.ArgumentParser:
     draft.add_argument("--objective", required=True)
     draft.add_argument("--output", required=True)
     draft.add_argument("--request", help="中文岗位权限要求；明确动作会编译为权限参数和验收案例")
-    configure = commands.add_parser("configure", help="用一句需求修改权限并输出前后参数 Diff")
+    configure = commands.add_parser("configure", help="真人应用需求变化并保存不可变版本")
     configure.add_argument("package")
     configure.add_argument("--request", required=True)
+    propose = commands.add_parser("propose", help="只读预览组织与权限 Diff，不修改员工包")
+    propose.add_argument("package")
+    propose.add_argument("--request", required=True)
+    diff = commands.add_parser("diff", help="比较两个不可变版本")
+    diff.add_argument("package")
+    diff.add_argument("--from", dest="from_version", type=int)
+    diff.add_argument("--to", dest="to_version", type=int)
+    diff.add_argument("--json", action="store_true")
+    history = commands.add_parser("history", help="列出全部不可变需求版本")
+    history.add_argument("package")
+    simulate = commands.add_parser("simulate", help="计算下一次执行路径，不调用模型")
+    simulate.add_argument("package")
+    simulate.add_argument("--json", action="store_true")
     cc = commands.add_parser("cc", help="生成 Claude Code PreToolUse 权限适配器")
     cc.add_argument("package")
     cc.add_argument("--python", default=sys.executable, help="安装 feeho-employee 的 Python 路径")
@@ -275,6 +293,50 @@ def main(argv=None) -> int:
             report = apply_request(args.package, args.request)
             print(format_diff(report))
             print(f"参数报告：{Path(args.package).resolve() / 'policy-diff.json'}")
+        elif args.command == "propose":
+            import shutil
+            import tempfile
+            from .history import list_versions
+            from .policy import apply_request, format_diff
+            original_versions = list_versions(Path(args.package).resolve())
+            with tempfile.TemporaryDirectory() as temporary:
+                preview = Path(temporary) / "employee"
+                shutil.copytree(args.package, preview)
+                report = apply_request(preview, args.request)
+            report["previous_version"] = original_versions[-1]["version"] if original_versions else 1
+            report["version"] = report["previous_version"] + 1 if report["changes"] else report["previous_version"]
+            print("只读预览，员工包未修改。")
+            print(format_diff(report))
+            if report["changes"]:
+                print(f"真人应用：feeho configure {Path(args.package).resolve()} --request \"{args.request}\"")
+        elif args.command == "diff":
+            from .history import list_versions, organization_changes, read_version, simulate_current
+            from .policy import format_diff, policy_diff
+            versions = list_versions(Path(args.package).resolve())
+            if not versions:
+                raise PackageError("还没有版本记录，请先运行 feeho configure")
+            target = args.to_version or versions[-1]["version"]
+            source = args.from_version or target - 1
+            if source < 1:
+                raise PackageError("比较起点不能小于 v1")
+            before = read_version(Path(args.package).resolve(), source)
+            after = read_version(Path(args.package).resolve(), target)
+            report = {"schema_version": "0.3", "previous_version": source, "version": target, "changes": policy_diff(before["permissions"], after["permissions"]) + organization_changes(before["organization"], after["organization"]), "new_required_cases": [], "warnings": [], "next_execution": simulate_current(Path(args.package).resolve())}
+            print(json.dumps(report, ensure_ascii=False, indent=2) if args.json else format_diff(report))
+        elif args.command == "history":
+            from .history import list_versions
+            for version in list_versions(Path(args.package).resolve()):
+                print(f"v{version['version']:03d}  {version['created_at']}  {version['request']}")
+        elif args.command == "simulate":
+            from .history import simulate_current
+            result = simulate_current(Path(args.package).resolve())
+            if args.json:
+                print(json.dumps(result, ensure_ascii=False, indent=2))
+            else:
+                print(f"执行路径：{' → '.join(result['trace'])}")
+                print(f"审批：{result['approval']}")
+                print(f"工具结果：{result['tool_decision']}（{result['next_execution']}）")
+                print(result["note"])
         elif args.command == "cc":
             from .runtime import export_adapter
             destination = export_adapter(args.package, args.python)

@@ -10,7 +10,7 @@
 
 FEEHO Employee is a **model-agnostic contract toolkit** for turning a job objective into a portable employee package, validating its rules and permissions, and evaluating real agent results against explicit acceptance cases.
 
-Version 0.2 adds deterministic Chinese requirement-to-policy diffs, acceptance invalidation, a Claude Code `PreToolUse` adapter, one-time expiring human grants and runtime audit records. See the [Claude Code comparison guide](CC_COMPARISON.zh-CN.md) for reproducible commands and security boundaries.
+Version 0.3 adds full organization and workflow diffs, immutable version history, read-only `propose` previews, deterministic execution-path simulation and `required_sequence` acceptance checks. It also includes the Claude Code `PreToolUse` adapter, one-time expiring human grants and runtime audit records introduced in v0.2. See the [Claude Code comparison guide](CC_COMPARISON.zh-CN.md) for reproducible commands and security boundaries.
 
 A sentence can create a draft. It cannot make someone ready for work. Enterprise rules, permission boundaries, handoffs, external results and human review are still required.
 

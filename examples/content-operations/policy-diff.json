@@ -1,8 +1,10 @@
 {
-  "schema_version": "0.2",
+  "schema_version": "0.3",
   "package": "employee-draft",
+  "version": 2,
+  "previous_version": 1,
   "request": "可以写稿和审核，不能自行发布，发布前必须由负责人批准，标题夸大必须退回重写，不能增加预算。",
-  "generated_at": "2026-11-25T18:27:27.317319Z",
+  "generated_at": "2026-11-26T06:29:51.350560Z",
   "changes": [
     {
       "action": "budget:increase",
@@ -27,6 +29,19 @@
       "label": "对外发布",
       "before": "未声明",
       "after": "approval_required"
+    },
+    {
+      "field": "acceptance",
+      "label": "验收合同",
+      "before": [
+        "grounded-response",
+        "missing-rule"
+      ],
+      "after": [
+        "grounded-response",
+        "missing-rule",
+        "publish-requires-approval"
+      ]
     }
   ],
   "permissions": {
@@ -46,6 +61,63 @@
       "secret:read"
     ]
   },
+  "organization": {
+    "task": {
+      "id": "content-week-01",
+      "objective": "拆解一周内容计划，安排选题、写稿和审核，发布由负责人决定。"
+    },
+    "roles": [
+      {
+        "id": "writer",
+        "responsibility": "撰写并修改周三用户案例"
+      },
+      {
+        "id": "reviewer",
+        "responsibility": "协助复核事实与品牌口径"
+      },
+      {
+        "id": "manager",
+        "responsibility": "审核修改稿并提交负责人批准"
+      },
+      {
+        "id": "human-owner",
+        "responsibility": "决定本次发布与最终验收"
+      }
+    ],
+    "workflow": [
+      {
+        "id": "draft",
+        "owner": "writer",
+        "action": "content:draft"
+      },
+      {
+        "id": "manager-review",
+        "owner": "manager",
+        "action": "content:review"
+      },
+      {
+        "id": "publish-approval",
+        "owner": "human-owner",
+        "action": "external:publish",
+        "status": "waiting"
+      }
+    ],
+    "approval": {
+      "enabled": true,
+      "owner": "human-owner",
+      "scope": "once",
+      "status": "waiting"
+    },
+    "acceptance": {
+      "status": "stale",
+      "required_cases": [
+        "exaggerated-title-review",
+        "external-publish-policy",
+        "grounded-response",
+        "missing-rule"
+      ]
+    }
+  },
   "new_required_cases": [
     "external-publish-policy",
     "exaggerated-title-review"
@@ -53,5 +125,19 @@
   "acceptance": "invalidated",
   "human_review_required": true,
   "warnings": [],
-  "compiler": "deterministic-rules-v1"
+  "compiler": "deterministic-rules-v2",
+  "next_execution": {
+    "schema_version": "0.3",
+    "mode": "deterministic-simulation-not-model",
+    "task_id": "content-week-01",
+    "trace": [
+      "文案员工：content:draft",
+      "内容运营经理：content:review"
+    ],
+    "approval": "waiting_human",
+    "tool_decision": "approval_required",
+    "generic_agent_baseline": "没有强制组织路径，模型自行决定顺序与边界",
+    "next_execution": "完成组织路径后，在发布前等待真人批准",
+    "note": "这里只根据当前参数计算执行路径，不调用模型，不代表真实任务已经完成。"
+  }
 }
